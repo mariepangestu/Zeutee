@@ -1,14 +1,22 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {HambergerMenu, SearchNormal1} from 'iconsax-react-native';
 import fontZ from './src/assets/font/fonts';
+import {ItemCity, ListUpcoming, ListArtist} from './src/components';
+import {UpcomingConcert, ArtistConcert} from './detail';
 
 export default function App() {
   return (
     <ScrollView>
-      <View style={styles.container1}>
+      <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Z</Text>
+          <Text style={styles.forZ}>Z</Text>
           <View style={styles.header1}>
             <SearchNormal1 color="#ffffff" variant="Linear" size={24} />
             <HambergerMenu color="#ffffff" variant="Linear" size={24} />
@@ -16,42 +24,13 @@ export default function App() {
         </View>
         <View style={styles.container2}>
           <Text style={styles.title}>Up Coming</Text>
-          <ScrollView horizontal>
-            <View>
-              <Image
-                style={styles.imageUpcoming}
-                source={require('./src/pic/fabula.jpeg')}
-              />
-            </View>
-            <View>
-              <Image
-                style={styles.imageUpcoming}
-                source={require('./src/pic/edsheeran.webp')}
-              />
-            </View>
-            <View>
-              <Image
-                style={styles.imageUpcoming}
-                source={require('./src/pic/whisnu.png')}
-              />
-            </View>
-            <View>
-              <Image
-                style={styles.imageUpcoming}
-                source={require('./src/pic/BMTH.jpg')}
-              />
-            </View>
-            <View>
-              <Image
-                style={styles.imageUpcoming}
-                source={require('./src/pic/cp.jpg')}
-              />
-            </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Upcoming />
           </ScrollView>
         </View>
         <View style={styles.container2}>
           <Text style={styles.title}>Recently Opened</Text>
-          <ScrollView horizontal>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View>
               <Image
                 style={styles.imageRec}
@@ -73,7 +52,7 @@ export default function App() {
             <View>
               <Image
                 style={styles.imageRec}
-                source={require('./src/pic/edsheeran.webp')}
+                source={require('./src/pic/edsheeran-.jpg')}
               />
             </View>
             <View>
@@ -85,93 +64,61 @@ export default function App() {
           </ScrollView>
         </View>
         <View style={styles.container2}>
-        <Text style={styles.title}>Location</Text>
-          <ScrollView horizontal>
-            <View style={styles.Location}>
-              <Text style={styles.LocText}>Malang</Text>
-            </View>
-            <View style={styles.Location}>
-              <Text style={styles.LocText}>Jakarta</Text>
-            </View>
-            <View style={styles.Location}>
-              <Text style={styles.LocText}>Semarang</Text>
-            </View>
-            <View style={styles.Location}>
-              <Text style={styles.LocText}>Banyuwangi</Text>
-            </View>
-            <View style={styles.Location}>
-              <Text style={styles.LocText}>Surabaya</Text>
-            </View>
+          <Text style={styles.title}>Location</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <ItemCity NameCity={'Malang'} />
+            <ItemCity NameCity={'Surabaya'} />
+            <ItemCity NameCity={'Semarang'} />
+            <ItemCity NameCity={'Jakarta'} />
+            <ItemCity NameCity={'Palembang'} />
           </ScrollView>
         </View>
         <View style={styles.container2}>
           <Text style={styles.title}>Artist</Text>
-          <ScrollView horizontal>
-            <View style={styles.container3}>
-              <Image
-                style={styles.imageRec}
-                source={require('./src/pic/fabula.jpeg')}
-              />
-              <Text style={styles.description}>Mahalini</Text>
-            </View>
-            <View style={styles.container3}>
-              <Image
-                style={styles.imageRec}
-                source={require('./src/pic/edsheeran.webp')}
-              />
-              <Text style={styles.description}>Ed Sheeran</Text>
-            </View>
-            <View style={styles.container3}>
-              <Image
-                style={styles.imageRec}
-                source={require('./src/pic/whisnu.png')}
-              />
-              <Text style={styles.description}>Whisnu Santika</Text>
-            </View>
-            <View style={styles.container3}>
-              <Image
-                style={styles.imageRec}
-                source={require('./src/pic/BMTH.jpg')}
-              />
-              <Text style={styles.description}>Bring Me The</Text>
-            </View>
-            <View style={styles.container3}>
-              <Image
-                style={styles.imageRec}
-                source={require('./src/pic/cp.jpg')}
-              />
-              <Text style={styles.description}>Coldplay</Text>
-            </View>
-          </ScrollView>
+          <Artist/>
         </View>
       </View>
     </ScrollView>
   );
 }
 
+const Upcoming = () => {
+  return (
+    <View>
+      <ListUpcoming data={UpcomingConcert} />
+    </View>
+  );
+};
+const Artist = () => {
+  return (
+    <View>
+      <ListArtist data={ArtistConcert} />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-  container1: {
+  container: {
     flex: 1,
     backgroundColor: '#000000',
   },
   container2: {
-    flex:1,
-    paddingHorizontal: 8,
     paddingVertical: 5,
     gap: 5,
     justifyContent: 'space-between',
   },
-  container3: {
+  artistCon: {
     gap: 8,
-    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderRadius: 10,
   },
   listcontainer: {
     paddingHorizontal: 15,
     paddingVertical: 10,
     gap: 8,
     justifyContent: 'flex-start',
-    alignContent:'flex-end',
-    borderRadius:15,
+    alignContent: 'flex-end',
+    borderRadius: 15,
   },
   header: {
     paddingHorizontal: 24,
@@ -192,6 +139,13 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   title: {
+    paddingLeft: 10,
+    fontSize: 20,
+    color: '#ffffff',
+    fontFamily: fontZ['Pjs-ExtraBold'],
+  },
+  forZ: {
+    paddingLeft: 5,
     fontSize: 20,
     color: '#ffffff',
     fontFamily: fontZ['Pjs-ExtraBold'],
@@ -202,38 +156,12 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: 'space-between',
   },
-  imageUpcoming: {
-    margin: 10,
-    borderRadius: 10,
-    resizeMode: 'cover',
-    width: 300,
-    height: 380,
-    gap: 8,
-  },
   imageRec: {
     margin: 10,
     borderRadius: 10,
     resizeMode: 'cover',
     width: 120,
     height: 160,
-    gap: 8,
-  },
-  Location: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 25,
-    alignItems: 'center',
-    backgroundColor: '#2c2c2c',
-    marginHorizontal: 5,
-  },
-  LocText: {
-    fontFamily: fontZ['Pjs-SemiBold'],
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  description:{
-    fontSize: 15,
-    color: '#ffffff',
-      fontFamily: fontZ['Pjs-SemiBold'],
+    gap: 2,
   },
 });

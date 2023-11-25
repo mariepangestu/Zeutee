@@ -20,7 +20,7 @@ const ItemConcert = ({item, variant, onPress}) => {
         source={item.UpcomingImage}>
         <View style={styles.calendar}>
           <TouchableOpacity onPress={onPress}>
-            <CalendarAdd color="#eee" variant={variant} size={28} />
+            <CalendarAdd color="#eee" variant={variant} size={25} />
           </TouchableOpacity>
         </View>
         <View>
@@ -73,22 +73,22 @@ const styles = StyleSheet.create({
   },
   imageUpcoming: {
     resizeMode: 'cover',
-    width: 300,
-    height: 380,
+    width: 210,
+    height: 280,
     borderRadius: 15,
   },
   upComingInfo: {
-    paddingTop: 280,
+    paddingTop: 180,
     paddingLeft: 8,
     justifyContent: 'flex-end',
-    fontSize: 20,
+    fontSize: 18,
     color: '#ffffff',
     fontFamily: fontZ['Pjs-Bold'],
   },
   upComingText: {
     paddingLeft: 8,
     justifyContent: 'flex-end',
-    fontSize: 15,
+    fontSize: 13,
     color: '#e8e8e8',
     fontFamily: fontZ['Pjs-Medium'],
   },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   calendar:{
-    paddingLeft : 260,
+    paddingLeft : 175,
     paddingTop : 10,
   },
 });

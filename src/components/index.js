@@ -1,4 +1,5 @@
 import ListUpcoming from "./ListConcert";
 import ItemCity from "./ListCity";
 import ListArtist from "./ListArtist";
-export {ListUpcoming, ItemCity, ListArtist}
+import ItemRemind from "./ItemRemind";
+export {ListUpcoming, ItemCity, ListArtist, ItemRemind}

@@ -1,4 +1,5 @@
 import Home from './Home';
 import Profile from './Profile';
 import Remind from './Remind';
-export {Home, Profile, Remind};
+import ConcertDetail from './ConcertDetail';
+export {Home, Profile, Remind, ConcertDetail};

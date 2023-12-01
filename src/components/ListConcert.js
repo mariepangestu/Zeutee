@@ -9,10 +9,13 @@ import {
 } from 'react-native';
 import fontZ from '../assets/font/fonts';
 import {CalendarAdd} from 'iconsax-react-native';
+import {useNavigation} from '@react-navigation/native';
+import { ConcertDetail } from '../pages';
 
 const ItemConcert = ({item, variant, onPress}) => {
+  const navigation = useNavigation();
   return (
-    <View>
+    <TouchableOpacity onPress={() => navigation.navigate('ConcertDetail', {concertId: item.id})}>
       <ImageBackground
         style={styles.imageUpcoming}
         resizeMode="cover"
@@ -28,7 +31,7 @@ const ItemConcert = ({item, variant, onPress}) => {
           <Text style={styles.upComingText}>{item.event}</Text>
         </View>
       </ImageBackground>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -99,8 +102,8 @@ const styles = StyleSheet.create({
     fontFamily: fontZ['Pjs-Bold'],
     flexDirection: 'row',
   },
-  calendar:{
-    paddingLeft : 175,
-    paddingTop : 10,
+  calendar: {
+    paddingLeft: 175,
+    paddingTop: 10,
   },
 });

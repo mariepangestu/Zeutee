@@ -1,11 +1,13 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
+import {StyleSheet, Text, View, Image, FlatList, TouchableOpacity} from 'react-native';
 import fontZ from '../assets/font/fonts';
+import {useNavigation} from '@react-navigation/native';
 
 const ItemArtist = ({item}) => {
+const navigation = useNavigation();
   return (
     <View style={styles.VerticalList}>
-      <View style={styles.artistCon}>
+      <TouchableOpacity style={styles.artistCon} onPress={() => navigation.navigate('ConcertDetail', {concertId: item.id})}>
         <Image
           style={styles.imageRec}
           source={item.ArtistPic}
@@ -14,7 +16,7 @@ const ItemArtist = ({item}) => {
           <Text style={styles.Name}>{item.ArtistName}</Text>
           <Text style={styles.description}>{item.Song}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

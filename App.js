@@ -1,6 +1,13 @@
 import * as React from 'react';
-import { Profile, Remind, Home } from './src/pages';
+import Router from './src/navigation/Router';
+import { NavigationContainer } from '@react-navigation/native';
+import {Home} from './src/pages';
 export default function App() {
-  return <Profile />
+  return (
+    //  <Home />
+    <NavigationContainer>
+     <Router/>
+    </NavigationContainer>
+  )
 }
 

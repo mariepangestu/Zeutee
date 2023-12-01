@@ -17,8 +17,8 @@ const Profile = () => {
         <View style={styles.containerLogo}>
           <Image style={styles.logo} source={require('../../pic/logo.png')} />
         </View>
-        <View>
-          <Add color="#ffffff" variant="Outline" size={33} />
+        <View style={styles.header1}>
+          <Add color="#ffffff" variant="Linear" size={24} />
         </View>
       </View>
       <View style={{paddingTop: 10, margin: 12, flexDirection: 'row'}}>

@@ -15,7 +15,6 @@ export default function Home() {
           </View>
           <View style={styles.header1}>
             <SearchNormal1 color="#ffffff" variant="Linear" size={24} />
-            <HambergerMenu color="#ffffff" variant="Linear" size={24} />
           </View>
         </View>
         <View style={styles.container2}>

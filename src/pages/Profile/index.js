@@ -17,9 +17,9 @@ const Profile = () => {
         <View style={styles.containerLogo}>
           <Image style={styles.logo} source={require('../../pic/logo.png')} />
         </View>
-        <View style={styles.header1}>
+        <TouchableOpacity style={styles.header1}>
           <Add color="#ffffff" variant="Linear" size={24} />
-        </View>
+        </TouchableOpacity>
       </View>
       <View style={{paddingTop: 10, margin: 12, flexDirection: 'row'}}>
         <Image

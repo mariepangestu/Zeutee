@@ -2,7 +2,7 @@ import React from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Home, Profile, Remind, ConcertDetail} from '../pages';
-import {Home2, LocationDiscover,  ProfileCircle} from 'iconsax-react-native';
+import {Activity, CalendarAdd, ProfileCircle} from 'iconsax-react-native';
 import {StyleSheet} from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -23,7 +23,7 @@ function MainApp() {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({focused, color}) => (
-            <Home2
+            <Activity
               color={color}
               variant={focused ? 'Bold' : 'Linear'}
               size={24}
@@ -38,7 +38,7 @@ function MainApp() {
         options={{
           tabBarLabel: 'Remind',
           tabBarIcon: ({focused, color}) => (
-            <LocationDiscover
+            <CalendarAdd
               color={color}
               variant={focused ? 'Bold' : 'Linear'}
               size={24}
@@ -77,11 +77,11 @@ const Router = () => {
         name="ConcertDetail"
         component={ConcertDetail}
         options={{
-          headerShown: false, 
+          headerShown: false,
           animationEnabled: true,
           animationTypeForReplace: 'pop',
           gestureEnabled: true,
-          gestureDirection : 'horizontal',
+          gestureDirection: 'horizontal',
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
@@ -89,18 +89,18 @@ const Router = () => {
   );
 };
 
+export default Router;
+
 const styles = StyleSheet.create({
   tabcontainer: {
     backgroundColor: '#000000',
     paddingBottom: 10,
-          paddingTop: 10,
-          height: 60,
+    paddingTop: 11,
+    height: 55,
   },
-  tablabel:{
+  tablabel: {
     marginTop: 5,
-          fontSize: 10,
-          fontFamily: 'Pjs-Medium',
-  }
+    fontSize: 10,
+    fontFamily: 'Pjs-Medium',
+  },
 });
-
-export default Router;

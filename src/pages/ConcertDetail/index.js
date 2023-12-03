@@ -1,9 +1,15 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {HambergerMenu, SearchNormal1} from 'iconsax-react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
+import {ArrowCircleLeft, Share} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
-import {ItemCity, ListUpcoming, ListArtist} from '../../components';
-import {UpcomingConcert, ArtistConcert} from '../../../detail';
+import {UpcomingConcert} from '../../../detail';
 import {useNavigation} from '@react-navigation/native';
 
 const ConcertDetail = ({route}) => {
@@ -12,31 +18,40 @@ const ConcertDetail = ({route}) => {
     concert => concert.id === concertId,
   );
   const navigation = useNavigation();
-//   const toggleIcon = iconName => {
-//     setIconStates(prevStates => ({
-//       ...prevStates,
-//       [iconName]: {
-//         variant: prevStates[iconName].variant === 'Linear' ? 'Bold' : 'Linear',
-//         color:
-//           prevStates[iconName].variant === 'Linear'
-//             ? colors.blue()
-//             : colors.grey(0.6),
-//       },
-//     }));
-//   };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ArrowLeft color={colors.grey(0.6)} variant="Linear" size={24} />
+          <ArrowCircleLeft color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
         <View style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
-          <Share color={colors.grey(0.6)} variant="Linear" size={24} />
+          <Share color="#ffffff" variant="Linear" size={24} />
         </View>
       </View>
       <ScrollView>
-        <Image style={styles.imageRec}>{selectedConcert.UpcomingImage}</Image>
-        <Text></Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
+          <Image
+            style={styles.imageRec}
+            source={selectedConcert.UpcomingImage}
+          />
+        </View>
+        <View>
+          <Text style={styles.artist}>{selectedConcert.artistName}</Text>
+          <Text style={styles.event}>{selectedConcert.event}</Text>
+          <Text style={styles.description}>{selectedConcert.description}</Text>
+          <Text style={styles.description}>Date              : {selectedConcert.date}</Text>
+          <Text style={styles.description}>More Info(Instagram): {selectedConcert.info}</Text>
+        </View>
+        <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: 70,
+        }}>
+        <Text>copyright @ZeuteeApp2023</Text>
+      </View>
       </ScrollView>
     </View>
   );
@@ -48,26 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
-  logo: {
-    margin: 10,
-    resizeMode: 'cover',
-    width: 22,
-    height: 22,
-  },
-  containerLogo: {
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
-  },
-  container2: {
-    paddingVertical: 5,
-    gap: 5,
-    justifyContent: 'space-between',
-  },
-  artistCon: {
-    gap: 8,
-    flexDirection: 'row',
-    borderRadius: 10,
-  },
   header: {
     paddingHorizontal: 24,
     alignContent: 'center',
@@ -78,26 +73,35 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 4,
   },
-  header1: {
-    paddingTop: 8,
-    paddingBottom: 4,
-    alignContent: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 10,
+  artist:{
+    paddingLeft :10,
+    paddingRight :10,
+    fontSize: 25,
+    color: '#ffffff',
+    fontFamily: fontZ['Pjs-Bold'],
   },
-  title: {
-    paddingLeft: 10,
+  event: {
+    paddingLeft :10,
+    paddingRight :10,
+    paddingBottom:30,
     fontSize: 20,
     color: '#ffffff',
-    fontFamily: fontZ['Pjs-ExtraBold'],
+    fontFamily: fontZ['Pjs-SemiBold'],
+  },
+  description: {
+    paddingLeft :10,
+    paddingRight :10,
+    fontSize: 15,
+    color: '#ffffff',
+    fontFamily: fontZ['Pjs-Regular'],
   },
   imageRec: {
-    margin: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
     borderRadius: 10,
     resizeMode: 'cover',
-    width: 120,
-    height: 160,
-    gap: 2,
+    width: 210,
+    height: 300,
+    margin: 15,
   },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {HambergerMenu, SearchNormal1} from 'iconsax-react-native';
+import {SearchNormal1} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {ItemCity, ListUpcoming, ListArtist} from '../../components';
 import {UpcomingConcert, ArtistConcert} from '../../../detail';

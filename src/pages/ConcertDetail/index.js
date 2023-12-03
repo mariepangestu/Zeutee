@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useRef} from 'react';
 import {
   Image,
   ScrollView,
@@ -6,8 +6,9 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
-import {ArrowCircleLeft, Share} from 'iconsax-react-native';
+import {ArrowCircleLeft, More} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {UpcomingConcert} from '../../../detail';
 import {useNavigation} from '@react-navigation/native';
@@ -18,18 +19,30 @@ const ConcertDetail = ({route}) => {
     concert => concert.id === concertId,
   );
   const navigation = useNavigation();
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const diffClampY = Animated.diffClamp(scrollY, 0, 46);
+  const headerY = diffClampY.interpolate({
+    inputRange: [0, 46],
+    outputRange: [0, -46],
+  });
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <Animated.View
+        style={[styles.header, {transform: [{translateY: headerY}]}]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowCircleLeft color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
         <View style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
-          <Share color="#ffffff" variant="Linear" size={24} />
+          <More color="#ffffff" variant="Linear" size={24} />
         </View>
-      </View>
-      <ScrollView>
-        <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
+      </Animated.View>
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollY}}}],
+          {useNativeDriver: true},
+        )}>
+        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <Image
             style={styles.imageRec}
             source={selectedConcert.UpcomingImage}
@@ -39,20 +52,22 @@ const ConcertDetail = ({route}) => {
           <Text style={styles.artist}>{selectedConcert.artistName}</Text>
           <Text style={styles.event}>{selectedConcert.event}</Text>
           <Text style={styles.description}>{selectedConcert.description}</Text>
-          <Text style={styles.description}>Date              : {selectedConcert.date}</Text>
-          <Text style={styles.description}>More Info(Instagram): {selectedConcert.info}</Text>
+          <Text style={styles.description}>Date : {selectedConcert.date}</Text>
+          <Text style={styles.description}>
+            More Info(Instagram): {selectedConcert.info}
+          </Text>
         </View>
         <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingTop: 70,
-        }}>
-        <Text>copyright @ZeuteeApp2023</Text>
-      </View>
-      </ScrollView>
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingTop: 70,
+          }}>
+          <Text>copyright @ZeuteeApp2023</Text>
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 };
@@ -64,33 +79,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   header: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     alignContent: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    height: 52,
-    elevation: 8,
-    paddingTop: 8,
+    height: 46,
+    paddingTop: 12,
     paddingBottom: 4,
+    backgroundColor:'#1f1f1f',
   },
-  artist:{
-    paddingLeft :10,
-    paddingRight :10,
+  artist: {
+    paddingLeft: 10,
+    paddingRight: 10,
     fontSize: 25,
     color: '#ffffff',
     fontFamily: fontZ['Pjs-Bold'],
   },
   event: {
-    paddingLeft :10,
-    paddingRight :10,
-    paddingBottom:30,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 30,
     fontSize: 20,
     color: '#ffffff',
     fontFamily: fontZ['Pjs-SemiBold'],
   },
   description: {
-    paddingLeft :10,
-    paddingRight :10,
+    paddingLeft: 10,
+    paddingRight: 10,
     fontSize: 15,
     color: '#ffffff',
     fontFamily: fontZ['Pjs-Regular'],

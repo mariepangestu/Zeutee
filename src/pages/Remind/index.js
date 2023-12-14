@@ -1,6 +1,5 @@
 import React from 'react';
 import {Image, ScrollView, StyleSheet,Text,  View} from 'react-native';
-import { SearchNormal1} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import { ItemRemind } from '../../components';
 import {UpcomingConcert} from '../../../detail';
@@ -13,9 +12,6 @@ const Remind = () => {
           <Image style={styles.logo} source={require('../../pic/logo.png')} />
         </View>
         <Text style={styles.title}>Reminder</Text>
-        <View style={styles.header1}>
-          <SearchNormal1 color="#ffffff" variant="Linear" size={24} />
-        </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{paddingHorizontal:10, gap:5, paddingVertical:5}}>

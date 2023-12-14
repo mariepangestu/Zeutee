@@ -1,14 +1,17 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, Text, View, TouchableWithoutFeedback} from 'react-native';
 import {SearchNormal1} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {ItemCity, ListUpcoming, ListArtist} from '../../components';
 import {UpcomingConcert, ArtistConcert} from '../../../detail';
+import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
+  const navigation = useNavigation();
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
         <View style={styles.header}>
           <View style={styles.containerLogo}>
             <Image style={styles.logo} source={require('../../pic/logo.png')} />
@@ -17,6 +20,7 @@ export default function Home() {
             <SearchNormal1 color="#ffffff" variant="Linear" size={24} />
           </View>
         </View>
+        </TouchableWithoutFeedback>
         <View style={styles.container2}>
           <Text style={styles.title}>Up Coming</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>

@@ -9,15 +9,18 @@ import {
 import {Add} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {ProfileData} from '../../../detail';
+import { Setting2, Edit } from "iconsax-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const Profile = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.containerLogo}>
           <Image style={styles.logo} source={require('../../pic/logo.png')} />
         </View>
-        <TouchableOpacity style={styles.header1}>
+        <TouchableOpacity style={styles.header1} onPress={() => navigation.navigate("AddInfo")}>
           <Add color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
       </View>
@@ -35,7 +38,7 @@ const Profile = () => {
       <TouchableOpacity style={styles.buttonEdit}>
         <Text style={styles.textbutton}>Edit Profile</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonEdit}>
+      <TouchableOpacity style={styles.buttonEdit} onPress={() => navigation.navigate("Remind")}>
         <Text style={styles.textbutton}>My Reminder</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.buttonEdit}>

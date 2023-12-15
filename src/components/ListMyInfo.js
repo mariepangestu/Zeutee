@@ -3,38 +3,48 @@ import {
   StyleSheet,
   Text,
   View,
-  ImageBackground,
+  Image,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import fontZ from '../assets/font/fonts';
-import {CalendarAdd} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 
-const ItemConcert = ({item, variant, onPress}) => {
+const truncateDescription = (text, maxLength) => {
+    if (!text || typeof text !== 'string') {
+      return ''; // atau nilai default sesuai kebutuhan Anda
+    }
+    const words = text.split(' ');
+    if (words.length > maxLength) {
+      return words.slice(0, maxLength).join(' ') + ' ...';
+    }
+    return text;
+  };
+
+const ItemConcert = ({item}) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('ConcertDetail', {concertId: item.id})}>
-      <ImageBackground
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('ConcertDetail', {concertId: item.id})
+      } style={{ flexDirection:'row', paddingBottom:8 }}>
+      <Image
         style={styles.imageUpcoming}
         resizeMode="cover"
         imageStyle={{borderRadius: 10}}
-        source={item.UpcomingImage}>
-        <View style={styles.calendar}>
-          <TouchableOpacity onPress={onPress}>
-            <CalendarAdd color="#eee" variant={variant} size={25} />
-          </TouchableOpacity>
-        </View>
-        <View>
-          <Text style={styles.upComingInfo}>{item.artistName}</Text>
-          <Text style={styles.upComingText}>{item.event}</Text>
-        </View>
-      </ImageBackground>
+        source={item.UpcomingImage}/>
+      <View style={{paddingLeft: 5, paddingTop: 50, width:245}}>
+            <Text style={styles.upComingInfo}>{item.artistName}</Text>
+            <Text style={styles.upComingText}>{item.event}</Text>
+            <Text style={styles.description}>
+              {truncateDescription(item.description, 10)}
+            </Text>
+          </View>
     </TouchableOpacity>
   );
 };
 
-const ListUpcoming = ({data}) => {
+const ListMyInfo = ({data}) => {
   const [Calendar, setCalendar] = useState([]);
   const toggleCalendar = itemId => {
     if (Calendar.includes(itemId)) {
@@ -60,49 +70,45 @@ const ListUpcoming = ({data}) => {
       renderItem={item => renderItem({...item})}
       ItemSeparatorComponent={() => <View style={{width: 10}} />}
       contentContainerStyle={{paddingHorizontal: 10}}
-      horizontal
-      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
     />
   );
+  // return (
+  //   <FlatList
+  //     data={data}
+  //     keyExtractor={item => item.id}
+  //     renderItem={item => renderItem({ ...item })}
+  //     ItemSeparatorComponent={itemSeparatorComponent}
+  //     contentContainerStyle={contentContainerStyle}
+  //     showsVerticalScrollIndicator={false}
+  //   />
+  // );
 };
-export default ListUpcoming;
+export default ListMyInfo;
 
 const styles = StyleSheet.create({
-  container2: {
-    paddingVertical: 5,
-    gap: 5,
-    justifyContent: 'space-between',
-  },
   imageUpcoming: {
     resizeMode: 'cover',
-    width: 210,
-    height: 280,
+    width: 150,
+    height: 220,
     borderRadius: 15,
   },
   upComingInfo: {
-    paddingTop: 180,
     paddingLeft: 8,
-    justifyContent: 'flex-end',
     fontSize: 18,
     color: '#ffffff',
     fontFamily: fontZ['Pjs-Bold'],
   },
   upComingText: {
     paddingLeft: 8,
-    justifyContent: 'flex-end',
     fontSize: 13,
     color: '#e8e8e8',
     fontFamily: fontZ['Pjs-Medium'],
   },
   description: {
-    paddingTop: 6,
+    paddingLeft: 8,
     fontSize: 15,
     color: '#ffffff',
-    fontFamily: fontZ['Pjs-Bold'],
-    flexDirection: 'row',
-  },
-  calendar: {
-    paddingLeft: 175,
-    paddingTop: 10,
-  },
+    fontFamily: fontZ['Pjs-Regular'],
+  },  
 });

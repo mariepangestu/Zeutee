@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Home, Profile, Remind, ConcertDetail, SearchInfo, AddInfo} from '../pages';
+import {Home, Profile, Remind, ConcertDetail, SearchInfo, AddInfo, MyInfo, EditInfo} from '../pages';
 import {Activity, CalendarAdd, ProfileCircle} from 'iconsax-react-native';
 import {StyleSheet} from 'react-native';
 
@@ -102,6 +102,25 @@ const Router = () => {
           animationTypeForReplace: 'pop',
           gestureEnabled: true,
           gestureDirection : 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="MyInfo"
+        component={MyInfo}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="EditInfo"
+        component={EditInfo}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />

@@ -4,4 +4,6 @@ import Remind from './Remind';
 import ConcertDetail from './ConcertDetail';
 import SearchInfo from './SearchInfo';
 import AddInfo from './AddInfo';
-export {Home, Profile, Remind, ConcertDetail, SearchInfo, AddInfo};
+import MyInfo from './myInfo';
+import EditInfo from './EditInfo';
+export {Home, Profile, Remind, ConcertDetail, SearchInfo, AddInfo, MyInfo, EditInfo};

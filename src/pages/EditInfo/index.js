@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 import {ArrowLeft} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 import fontZ from '../../assets/font/fonts';
 import axios from 'axios';
 
-const AddInfo = () => {
+const EditInfo = ({route}) => {
+  const {concertId} = route.params;
   const [concertData, setConcertData] = useState({
     artistName: '',
     event: '',
@@ -27,28 +27,66 @@ const AddInfo = () => {
       [key]: value,
     });
   };
-  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const navigation = useNavigation();
-  const handleUpload = async () => {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getConcertById();
+  }, [concertId]);
+
+  const getConcertById = async () => {
+    try {
+      const response = await axios.get(
+        `https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert/${concertId}`,
+      );
+      setConcertData({
+        artistName: response.data.artistName,
+        event: response.data.event,
+        description: response.data.description,
+        date: response.data.date,
+        info: response.data.info,
+      });
+      setImage(response.data.UpcomingImage);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  // const getConcertById = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert/${concertId}`,
+  //     );
+  //     const {artistName, event, description, date, info, UpcomingImage} =
+  //       response.data;
+  //     setConcertData({artistName, event, description, date, info});
+  //     setImage(UpcomingImage);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  const handleUpdate = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert', {
-        image,
-        artistName: concertData.artistName,
-        event: concertData.event,
-        description: concertData.description,
-        date: concertData.date,
-        info: concertData.info,
-      });
-  
-      console.log(response);
+      await axios.put(
+        `https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert/${concertId}`,
+        {
+          image,
+          artistName: concertData.artistName,
+          event: concertData.event,
+          description: concertData.description,
+          date: concertData.date,
+          info: concertData.info,
+        },
+      );
       setLoading(false);
       navigation.navigate('MyInfo');
     } catch (e) {
       console.log(e);
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -56,7 +94,7 @@ const AddInfo = () => {
           <ArrowLeft color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
         <View style={{flex: 1, alignItems: 'center'}}>
-          <Text style={styles.title}>Add Concert Info</Text>
+          <Text style={styles.title}>Edit Concert Info</Text>
         </View>
       </View>
       <ScrollView
@@ -71,7 +109,7 @@ const AddInfo = () => {
             value={image}
             onChangeText={text => setImage(text)}
             placeholderTextColor="#888888"
-            style={textInput.input}
+            style={textInput.content}
           />
         </View>
         <View style={textInput.borderDashed}>
@@ -81,7 +119,7 @@ const AddInfo = () => {
             onChangeText={text => handleChange('event', text)}
             placeholderTextColor="#888888"
             multiline
-            style={textInput.event}
+            style={textInput.content}
           />
         </View>
         <View style={textInput.borderDashed}>
@@ -91,7 +129,7 @@ const AddInfo = () => {
             onChangeText={text => handleChange('artistName', text)}
             placeholderTextColor="#888888"
             multiline
-            style={textInput.artistName}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed, {minHeight: 250}]}>
@@ -101,7 +139,7 @@ const AddInfo = () => {
             onChangeText={text => handleChange('description', text)}
             placeholderTextColor="#888888"
             multiline
-            style={textInput.description}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
@@ -111,7 +149,7 @@ const AddInfo = () => {
             onChangeText={text => handleChange('date', text)}
             placeholderTextColor="#888888"
             multiline
-            style={textInput.date}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
@@ -121,20 +159,19 @@ const AddInfo = () => {
             onChangeText={text => handleChange('info', text)}
             placeholderTextColor="#888888"
             multiline
-            style={textInput.info}
+            style={textInput.content}
           />
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.button} onPress={handleUpload}>
-          <Text style={styles.buttonLabel}>Upload</Text>
+        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          <Text style={styles.buttonLabel}>Update</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-export default AddInfo;
+export default EditInfo;
 
 const styles = StyleSheet.create({
   container: {
@@ -202,15 +239,15 @@ const textInput = StyleSheet.create({
     padding: 10,
     borderColor: '#888888',
   },
-  title: {
-    fontSize: 16,
-    fontFamily: fontZ['Pjs-SemiBold'],
-    color: '#ffffff',
-    padding: 0,
-  },
   content: {
     fontSize: 12,
     fontFamily: fontZ['Pjs-Regular'],
+    color: '#ffffff',
+    padding: 0,
+  },
+  title: {
+    fontSize: 16,
+    fontFamily: fontZ['Pjs-SemiBold'],
     color: '#ffffff',
     padding: 0,
   },

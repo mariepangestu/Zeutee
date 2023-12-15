@@ -45,7 +45,6 @@ export default ListArtist;
 
 const styles = StyleSheet.create({
   VerticalList: {
-    flexDirection : 'row',
     borderRadius: 10,
     backgroundColor: '#2c2c2c',
   },

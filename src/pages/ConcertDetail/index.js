@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import {
   Image,
   ScrollView,
@@ -12,6 +12,8 @@ import {ArrowCircleLeft, More} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {UpcomingConcert} from '../../../detail';
 import {useNavigation} from '@react-navigation/native';
+import ActionSheet from 'react-native-actions-sheet';
+import axios from 'axios';
 
 const ConcertDetail = ({route}) => {
   const {concertId} = route.params;
@@ -25,6 +27,47 @@ const ConcertDetail = ({route}) => {
     inputRange: [0, 46],
     outputRange: [0, -46],
   });
+  const [ setSelectedConcert] = useState(null);
+  const actionSheetRef = useRef(null);
+
+  const openActionSheet = () => {
+    actionSheetRef.current?.show();
+  };
+
+  const closeActionSheet = () => {
+    actionSheetRef.current?.hide();
+  };
+  useEffect(() => {
+    getConcertById();
+  }, [concertId]);
+
+  const getConcertById = async () => {
+    try {
+      const response = await axios.get(
+        `link endpoint API/${concertId}`,
+      );
+      setSelectedConcert(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const navigateEdit = () => {
+    closeActionSheet()
+    navigation.navigate('EditInfo', {concertId})
+  }
+  const handleDelete = async () => {
+   await axios.delete(`link endpoint API/${concertId}`)
+      .then(() => {
+        closeActionSheet()
+        navigation.navigate('MyInfo');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   return (
     <View style={styles.container}>
       <Animated.View
@@ -32,9 +75,9 @@ const ConcertDetail = ({route}) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowCircleLeft color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
-        <View style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
+        <TouchableOpacity onPress={openActionSheet} style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
           <More color="#ffffff" variant="Linear" size={24} />
-        </View>
+        </TouchableOpacity>
       </Animated.View>
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
@@ -68,6 +111,68 @@ const ConcertDetail = ({route}) => {
           <Text>copyright @ZeuteeApp2023</Text>
         </View>
       </Animated.ScrollView>
+      <ActionSheet
+        ref={actionSheetRef}
+        containerStyle={{
+          borderTopLeftRadius: 25,
+          borderTopRightRadius: 25,
+          backgroundColor:'#000000'
+        }}
+        indicatorStyle={{
+          width: 100,
+        }}
+        gestureEnabled={true}
+        defaultOverlayOpacity={0.3}>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={navigateEdit}
+          >
+          <Text
+            style={{
+              fontFamily: fontZ['Pjs-Medium'],
+              color: '#ffffff',
+              fontSize: 18,
+            }}>
+            Edit
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={handleDelete}>
+          <Text
+            style={{
+              fontFamily: fontZ['Pjs-Medium'],
+              color: '#ffffff',
+              fontSize: 18,
+            }}>
+            Delete
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={closeActionSheet}>
+          <Text
+            style={{
+              fontFamily: fontZ['Pjs-Medium'],
+              color: '#ff0303',
+              fontSize: 18,
+            }}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+      </ActionSheet>
     </View>
   );
 };

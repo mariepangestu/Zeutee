@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
+  ActivityIndicator, KeyboardAvoidingView
 } from 'react-native';
 import {ArrowLeft, AddSquare,Add} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -15,6 +15,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import FastImage from 'react-native-fast-image';
+import auth from '@react-native-firebase/auth';
 
 const AddInfo = () => {
   const [concertData, setConcertData] = useState({
@@ -42,6 +43,7 @@ const AddInfo = () => {
 
     setLoading(true);
     try {
+      const authorId = auth().currentUser.uid;
       await reference.putFile(image);
       const url = await reference.getDownloadURL();
       await firestore().collection('concert').add({
@@ -51,6 +53,7 @@ const AddInfo = () => {
         description: concertData.description,
         date: concertData.date,
         info: concertData.info,
+        authorId
       });
       setLoading(false);
       console.log('Info Concert added!');
@@ -74,6 +77,10 @@ const AddInfo = () => {
       });
   };
   return (
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      enabled>
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -203,6 +210,7 @@ const AddInfo = () => {
         </View>
       )}
     </View>
+    </KeyboardAvoidingView>
   );
 };
 

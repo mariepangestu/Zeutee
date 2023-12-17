@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  FlatList,
   TouchableOpacity,
 } from 'react-native';
 import fontZ from '../assets/font/fonts';

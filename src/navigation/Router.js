@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Home, Profile, Remind, ConcertDetail, SearchInfo, AddInfo, MyInfo, EditInfo} from '../pages';
+import {Home, Profile, Remind, ConcertDetail, SearchInfo, AddInfo, MyInfo, EditInfo, Login, Register, SplashScreen} from '../pages';
 import {Activity, CalendarAdd, ProfileCircle} from 'iconsax-react-native';
 import {StyleSheet} from 'react-native';
 
@@ -67,7 +67,22 @@ function MainApp() {
 }
 const Router = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Screen
+        name="SplashScreen"
+        component={SplashScreen}
+        options={{headerShown: false}}
+      />
+<Stack.Screen
+        name="Register"
+        component={Register}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="MainApp"
         component={MainApp}

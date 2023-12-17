@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useRef} from 'react';
 import {
   Image,
   StyleSheet,
@@ -10,9 +10,30 @@ import {Add} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {ProfileData} from '../../../detail';
 import { useNavigation } from "@react-navigation/native";
+import ActionSheet from 'react-native-actions-sheet';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const actionSheetRef = useRef(null);
+  const openActionSheet = () => {
+    actionSheetRef.current?.show();
+  };
+  const closeActionSheet = () => {
+    actionSheetRef.current?.hide();
+  };
+  const handleLogout = async () => {
+    try {
+      closeActionSheet();
+      await auth().signOut();
+      await AsyncStorage.removeItem('userData');
+      navigation.replace('Login');
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -46,8 +67,8 @@ const Profile = () => {
       <TouchableOpacity style={styles.buttonEdit}>
         <Text style={styles.textbutton}>Search History</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonEdit}>
-        <Text style={styles.textbutton}>About</Text>
+      <TouchableOpacity style={styles.buttonEdit} onPress={openActionSheet}>
+        <Text style={styles.textbutton}>More</Text>
       </TouchableOpacity>
       <View
         style={{
@@ -59,6 +80,51 @@ const Profile = () => {
         }}>
         <Text>copyright @ZeuteeApp2023</Text>
       </View>
+      <ActionSheet
+        ref={actionSheetRef}
+        containerStyle={{
+          borderTopLeftRadius: 25,
+          borderTopRightRadius: 25,
+          backgroundColor:'#000000',
+        }}
+        indicatorStyle={{
+          width: 100,
+        }}
+        gestureEnabled={true}
+        defaultOverlayOpacity={0.3}>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={handleLogout}>
+          <Text
+            style={{
+              fontFamily: fontZ['Pjs-Medium'],
+              color: '#ffffff',
+              fontSize: 18,
+            }}>
+            Log out
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={closeActionSheet}>
+          <Text
+            style={{
+              fontFamily: fontZ['Pjs-Medium'],
+              color: 'red',
+              fontSize: 18,
+            }}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+      </ActionSheet>
     </View>
   );
 };

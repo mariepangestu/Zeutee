@@ -9,10 +9,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import fontZ from '../../assets/font/fonts';
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {ArrowLeft} from 'iconsax-react-native';
 import {ListMyInfo} from '../../components';
-import {UpcomingConcert} from '../../../detail';
 import firestore from '@react-native-firebase/firestore';
 
 const MyInfo = () => {
@@ -70,7 +69,7 @@ const MyInfo = () => {
         </View>
       </View>
       {loading && <ActivityIndicator size={'large'} color={'#5ea668'} />}
-      <View style={{paddingVertical: 10,paddingHorizontal:10, gap: 10}}>
+      <View style={{paddingVertical: 10, paddingHorizontal: 10, gap: 10}}>
         {!loading &&
           concertData.map((item, index) => (
             <ListMyInfo item={item} key={index} />

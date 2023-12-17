@@ -37,45 +37,9 @@ const ListUpcoming = ({item, variant, onPress}) => {
   );
 };
 
-// const ListUpcoming = ({data}) => {
-//   const [Calendar, setCalendar] = useState([]);
-//   const toggleCalendar = itemId => {
-//     if (Calendar.includes(itemId)) {
-//       setCalendar(Calendar.filter(id => id !== itemId));
-//     } else {
-//       setCalendar([...Calendar, itemId]);
-//     }
-//   };
-//   const renderItem = ({item}) => {
-//     variant = Calendar.includes(item.id) ? 'Bold' : 'Linear';
-//     return (
-//       <ItemConcert
-//         item={item}
-//         variant={variant}
-//         onPress={() => toggleCalendar(item.id)}
-//       />
-//     );
-//   };
-//   return (
-//     <FlatList
-//       data={data}
-//       keyExtractor={item => item.id}
-//       renderItem={item => renderItem({...item})}
-//       ItemSeparatorComponent={() => <View style={{width: 10}} />}
-//       contentContainerStyle={{paddingHorizontal: 10}}
-//       horizontal
-//       showsHorizontalScrollIndicator={false}
-//     />
-//   );
-// };
 export default ListUpcoming;
 
 const styles = StyleSheet.create({
-  container2: {
-    paddingVertical: 5,
-    gap: 5,
-    justifyContent: 'space-between',
-  },
   imageUpcoming: {
     resizeMode: 'cover',
     width: 210,

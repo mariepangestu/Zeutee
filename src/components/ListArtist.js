@@ -37,7 +37,7 @@ const ListArtist =({data})=>{
       renderItem={item => renderItem({...item})}
       ItemSeparatorComponent={() => <View style={{width: 10}} />}
       contentContainerStyle={{paddingHorizontal: 10, gap:5}}
-      showsVerticalScrollIndicator={false}
+      horizontal
     />
   );
 }
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontFamily: fontZ['Pjs-Regular'],
     flexDirection: 'row',
+    width : 150,
     flexWrap : 'wrap',
   },
 });

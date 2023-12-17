@@ -5,12 +5,15 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  ScrollView,ActivityIndicator
 } from 'react-native';
-import {ArrowLeft} from 'iconsax-react-native';
+import {ArrowLeft, AddSquare, Add} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 import fontZ from '../../assets/font/fonts';
-import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 const EditInfo = ({route}) => {
   const {concertId} = route.params;
@@ -28,62 +31,80 @@ const EditInfo = ({route}) => {
     });
   };
   const [image, setImage] = useState(null);
+  const [oldImage, setOldImage] = useState(null);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    getConcertById();
+    const subscriber = firestore()
+      .collection('concert')
+      .doc(concertId)
+      .onSnapshot(documentSnapshot => {
+        const concertData = documentSnapshot.data();
+        if (concertData) {
+          console.log('Concert data: ', concertData);
+          setConcertData({
+            artistName: concertData.artistName,
+            event: concertData.event,
+            description: concertData.description,
+            date: concertData.date,
+            info: concertData.info,
+          });
+          setOldImage(concertData.image);
+          setImage(concertData.image);
+          setLoading(false);
+        } else {
+          console.log(`Concert with ID ${concertId} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
   }, [concertId]);
 
-  const getConcertById = async () => {
-    try {
-      const response = await axios.get(
-        `https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert/${concertId}`,
-      );
-      setConcertData({
-        artistName: response.data.artistName,
-        event: response.data.event,
-        description: response.data.description,
-        date: response.data.date,
-        info: response.data.info,
+  const handleImagePick = async () => {
+    ImagePicker.openPicker({
+      width: 1920,
+      height: 1080,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setImage(image.path);
+      })
+      .catch(error => {
+        console.log(error);
       });
-      setImage(response.data.UpcomingImage);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
   };
-  // const getConcertById = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert/${concertId}`,
-  //     );
-  //     const {artistName, event, description, date, info, UpcomingImage} =
-  //       response.data;
-  //     setConcertData({artistName, event, description, date, info});
-  //     setImage(UpcomingImage);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+
   const handleUpdate = async () => {
     setLoading(true);
+    let filename = image.substring(image.lastIndexOf('/') + 1);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+    const reference = storage().ref(`concertimages/${filename}`);
     try {
-      await axios.put(
-        `https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert/${concertId}`,
-        {
-          image,
-          artistName: concertData.artistName,
-          event: concertData.event,
-          description: concertData.description,
-          date: concertData.date,
-          info: concertData.info,
-        },
-      );
+      if (image !== oldImage && oldImage) {
+        const oldImageRef = storage().refFromURL(oldImage);
+        await oldImageRef.delete();
+      }
+      if (image !== oldImage) {
+        await reference.putFile(image);
+      }
+      const url =
+        image !== oldImage ? await reference.getDownloadURL() : oldImage;
+      await firestore().collection('concert').doc(concertId).update({
+        image: url,
+        artistName: concertData.artistName,
+            event: concertData.event,
+            description: concertData.description,
+            date: concertData.date,
+            info: concertData.info,
+      });
       setLoading(false);
-      navigation.navigate('MyInfo');
-    } catch (e) {
-      console.log(e);
+      console.log('Info Concert Updated!');
+      navigation.navigate('ConcertDetail', {concertId});
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -103,15 +124,58 @@ const EditInfo = ({route}) => {
           paddingVertical: 10,
           gap: 10,
         }}>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Image"
-            value={image}
-            onChangeText={text => setImage(text)}
-            placeholderTextColor="#888888"
-            style={textInput.content}
-          />
-        </View>
+        {image ? (
+          <View style={{position: 'relative'}}>
+            <FastImage
+              style={{width: '100%', height: 127, borderRadius: 5}}
+              source={{
+                uri: image,
+                headers: {Authorization: 'someAuthToken'},
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: '#000000',
+                borderRadius: 25,
+              }}
+              onPress={() => setImage(null)}>
+              <Add
+                size={20}
+                variant="Linear"
+                color='#ffffff'
+                style={{transform: [{rotate: '45deg'}]}}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleImagePick}>
+            <View
+              style={[
+                textInput.borderDashed,
+                {
+                  gap: 10,
+                  paddingVertical: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <AddSquare color='#ffffff' variant="Linear" size={42} />
+              <Text
+                style={{
+                  fontFamily: fontZ['Pjs-Regular'],
+                  fontSize: 12,
+                  color: '#ffffff',
+                }}>
+                Upload Thumbnail
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
         <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Event"
@@ -168,6 +232,11 @@ const EditInfo = ({route}) => {
           <Text style={styles.buttonLabel}>Update</Text>
         </TouchableOpacity>
       </View>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color='#ffffff' />
+        </View>
+      )}
     </View>
   );
 };

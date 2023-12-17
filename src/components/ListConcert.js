@@ -11,60 +11,63 @@ import fontZ from '../assets/font/fonts';
 import {CalendarAdd} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 
-const ItemConcert = ({item, variant, onPress}) => {
+const ListUpcoming = ({item, variant, onPress}) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('ConcertDetail', {concertId: item.id})}>
-      <ImageBackground
-        style={styles.imageUpcoming}
-        resizeMode="cover"
-        imageStyle={{borderRadius: 10}}
-        source={item.UpcomingImage}>
-        <View style={styles.calendar}>
-          <TouchableOpacity onPress={onPress}>
-            <CalendarAdd color="#eee" variant={variant} size={25} />
-          </TouchableOpacity>
-        </View>
-        <View>
-          <Text style={styles.upComingInfo}>{item.artistName}</Text>
-          <Text style={styles.upComingText}>{item.event}</Text>
-        </View>
-      </ImageBackground>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('ConcertDetail', {concertId: item.id})
+      }>
+        <ImageBackground
+          style={styles.imageUpcoming}
+          resizeMode="cover"
+          imageStyle={{borderRadius: 10}}
+          source={{uri: item?.image}}>
+          <View style={styles.calendar}>
+            <TouchableOpacity onPress={onPress}>
+              <CalendarAdd color="#eee" variant={variant} size={25} />
+            </TouchableOpacity>
+          </View>
+          <View style={{paddingVertical: 8, width: 392}}>
+            <Text style={styles.upComingInfo}>{item?.artistName}</Text>
+            <Text style={styles.upComingText}>{item?.event}</Text>
+          </View>
+        </ImageBackground>
     </TouchableOpacity>
   );
 };
 
-const ListUpcoming = ({data}) => {
-  const [Calendar, setCalendar] = useState([]);
-  const toggleCalendar = itemId => {
-    if (Calendar.includes(itemId)) {
-      setCalendar(Calendar.filter(id => id !== itemId));
-    } else {
-      setCalendar([...Calendar, itemId]);
-    }
-  };
-  const renderItem = ({item}) => {
-    variant = Calendar.includes(item.id) ? 'Bold' : 'Linear';
-    return (
-      <ItemConcert
-        item={item}
-        variant={variant}
-        onPress={() => toggleCalendar(item.id)}
-      />
-    );
-  };
-  return (
-    <FlatList
-      data={data}
-      keyExtractor={item => item.id}
-      renderItem={item => renderItem({...item})}
-      ItemSeparatorComponent={() => <View style={{width: 10}} />}
-      contentContainerStyle={{paddingHorizontal: 10}}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-    />
-  );
-};
+// const ListUpcoming = ({data}) => {
+//   const [Calendar, setCalendar] = useState([]);
+//   const toggleCalendar = itemId => {
+//     if (Calendar.includes(itemId)) {
+//       setCalendar(Calendar.filter(id => id !== itemId));
+//     } else {
+//       setCalendar([...Calendar, itemId]);
+//     }
+//   };
+//   const renderItem = ({item}) => {
+//     variant = Calendar.includes(item.id) ? 'Bold' : 'Linear';
+//     return (
+//       <ItemConcert
+//         item={item}
+//         variant={variant}
+//         onPress={() => toggleCalendar(item.id)}
+//       />
+//     );
+//   };
+//   return (
+//     <FlatList
+//       data={data}
+//       keyExtractor={item => item.id}
+//       renderItem={item => renderItem({...item})}
+//       ItemSeparatorComponent={() => <View style={{width: 10}} />}
+//       contentContainerStyle={{paddingHorizontal: 10}}
+//       horizontal
+//       showsHorizontalScrollIndicator={false}
+//     />
+//   );
+// };
 export default ListUpcoming;
 
 const styles = StyleSheet.create({

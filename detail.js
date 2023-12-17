@@ -4,19 +4,19 @@ export const City = [
         CityName : 'Malang' ,
     },
     {
-        id :1,
+        id :2,
         CityName : 'Jakarta' ,
     },
     {
-        id :1,
+        id :3,
         CityName : 'Semarang' ,
     },
     {
-        id :1,
+        id :4,
         CityName : 'Banyuwangi' ,
     },
     {
-        id :1,
+        id :5,
         CityName : 'Surabaya' ,
     },
 ]

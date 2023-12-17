@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   Image,
   ScrollView,
@@ -6,20 +6,19 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Animated,
+  Animated, ActivityIndicator
 } from 'react-native';
 import {ArrowCircleLeft, More} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {UpcomingConcert} from '../../../detail';
 import {useNavigation} from '@react-navigation/native';
 import ActionSheet from 'react-native-actions-sheet';
-import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import FastImage from 'react-native-fast-image';
 
 const ConcertDetail = ({route}) => {
   const {concertId} = route.params;
-  const selectedConcert = UpcomingConcert.find(
-    concert => concert.id === concertId,
-  );
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
   const diffClampY = Animated.diffClamp(scrollY, 0, 46);
@@ -27,47 +26,59 @@ const ConcertDetail = ({route}) => {
     inputRange: [0, 46],
     outputRange: [0, -46],
   });
-  const [ setSelectedConcert] = useState(null);
+  
+  const [loading, setLoading] = useState(true);
+  const [ selectedConcert , setSelectedConcert] = useState(null);
   const actionSheetRef = useRef(null);
-
   const openActionSheet = () => {
     actionSheetRef.current?.show();
   };
-
   const closeActionSheet = () => {
     actionSheetRef.current?.hide();
   };
   useEffect(() => {
-    getConcertById();
+    const subscriber = firestore()
+      .collection('concert')
+      .doc(concertId)
+      .onSnapshot(documentSnapshot => {
+        const concertData = documentSnapshot.data();
+        if (concertData) {
+          console.log('Concert data: ', concertData);
+          setSelectedConcert(concertData);
+        } else {
+          console.log(`Concert with ID ${concertId} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
   }, [concertId]);
-
-  const getConcertById = async () => {
+  const navigateEdit = () => {
+    closeActionSheet();
+    navigation.navigate('EditInfo', {concertId});
+  };
+  const handleDelete = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(
-        `link endpoint API/${concertId}`,
-      );
-      setSelectedConcert(response.data);
+      await firestore()
+        .collection('concert')
+        .doc(concertId)
+        .delete()
+        .then(() => {
+          console.log('Info Concert deleted!');
+        });
+      if (selectedConcert?.image) {
+        const imageRef = storage().refFromURL(selectedConcert?.image);
+        await imageRef.delete();
+      }
+      console.log('Concert deleted!');
+      closeActionSheet();
+      setSelectedConcert(null);
       setLoading(false);
+      navigation.navigate('Profile');
     } catch (error) {
       console.error(error);
     }
   };
-
-  const navigateEdit = () => {
-    closeActionSheet()
-    navigation.navigate('EditInfo', {concertId})
-  }
-  const handleDelete = async () => {
-   await axios.delete(`link endpoint API/${concertId}`)
-      .then(() => {
-        closeActionSheet()
-        navigation.navigate('MyInfo');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-
   return (
     <View style={styles.container}>
       <Animated.View
@@ -75,10 +86,17 @@ const ConcertDetail = ({route}) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowCircleLeft color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={openActionSheet} style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
+        <TouchableOpacity
+          onPress={openActionSheet}
+          style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
           <More color="#ffffff" variant="Linear" size={24} />
         </TouchableOpacity>
       </Animated.View>
+      {loading ? (
+        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+          <ActivityIndicator size={'large'} color='#ffffff' />
+        </View>
+      ) : (
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event(
@@ -86,18 +104,22 @@ const ConcertDetail = ({route}) => {
           {useNativeDriver: true},
         )}>
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          <Image
+        <FastImage
             style={styles.imageRec}
-            source={selectedConcert.UpcomingImage}
-          />
+            source={{
+              uri: selectedConcert?.image,
+              headers: {Authorization: 'someAuthToken'},
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.cover}></FastImage>
         </View>
         <View>
-          <Text style={styles.artist}>{selectedConcert.artistName}</Text>
-          <Text style={styles.event}>{selectedConcert.event}</Text>
-          <Text style={styles.description}>{selectedConcert.description}</Text>
-          <Text style={styles.description}>Date : {selectedConcert.date}</Text>
+          <Text style={styles.artist}>{selectedConcert?.artistName}</Text>
+          <Text style={styles.event}>{selectedConcert?.event}</Text>
+          <Text style={styles.description}>{selectedConcert?.description}</Text>
+          <Text style={styles.description}>Date : {selectedConcert?.date}</Text>
           <Text style={styles.description}>
-            More Info(Instagram): {selectedConcert.info}
+            More Info(Instagram): {selectedConcert?.info}
           </Text>
         </View>
         <View
@@ -111,12 +133,13 @@ const ConcertDetail = ({route}) => {
           <Text>copyright @ZeuteeApp2023</Text>
         </View>
       </Animated.ScrollView>
+      )}
       <ActionSheet
         ref={actionSheetRef}
         containerStyle={{
           borderTopLeftRadius: 25,
           borderTopRightRadius: 25,
-          backgroundColor:'#000000'
+          backgroundColor: '#000000',
         }}
         indicatorStyle={{
           width: 100,
@@ -129,8 +152,7 @@ const ConcertDetail = ({route}) => {
             alignItems: 'center',
             paddingVertical: 15,
           }}
-          onPress={navigateEdit}
-          >
+          onPress={navigateEdit}>
           <Text
             style={{
               fontFamily: fontZ['Pjs-Medium'],
@@ -191,7 +213,7 @@ const styles = StyleSheet.create({
     height: 46,
     paddingTop: 12,
     paddingBottom: 4,
-    backgroundColor:'#1f1f1f',
+    backgroundColor: '#1f1f1f',
   },
   artist: {
     paddingLeft: 10,
@@ -225,4 +247,3 @@ const styles = StyleSheet.create({
     margin: 15,
   },
 });
-

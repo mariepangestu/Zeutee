@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState, useEffect,useCallback} from 'react';
 import {
   Image,
   ScrollView,
@@ -6,17 +6,62 @@ import {
   Text,
   View,
   TouchableWithoutFeedback,
+  RefreshControl, ActivityIndicator
 } from 'react-native';
 import {SearchNormal1} from 'iconsax-react-native';
 import fontZ from '../../assets/font/fonts';
 import {ItemCity, ListUpcoming, ListArtist} from '../../components';
 import {UpcomingConcert, ArtistConcert} from '../../../detail';
 import {useNavigation} from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 export default function Home() {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [concertData, setConcertData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('concert')
+      .onSnapshot(querySnapshot => {
+        const concerts = [];
+        querySnapshot.forEach(documentSnapshot => {
+          concerts.push({
+            ...documentSnapshot.data(),
+            id: documentSnapshot.id,
+          });
+        });
+        setConcertData(concerts);
+        setLoading(false);
+      });
+    return () => subscriber();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      firestore()
+        .collection('concert')
+        .onSnapshot(querySnapshot => {
+          const concerts = [];
+          querySnapshot.forEach(documentSnapshot => {
+            concerts.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+          setConcertData(concerts);
+        });
+      setRefreshing(false);
+    }, 1500);
+  }, []);
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <TouchableWithoutFeedback
           onPress={() => navigation.navigate('SearchPage')}>
@@ -34,9 +79,15 @@ export default function Home() {
         </TouchableWithoutFeedback>
         <View style={styles.container2}>
           <Text style={styles.title}>Up Coming</Text>
-          <View >
-            <Upcoming />
+          {loading && <ActivityIndicator size={'large'} color={'#5ea668'} />}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}> 
+          <View style={{paddingVertical: 10, paddingHorizontal:10, gap: 10, flexDirection:'row'}}>
+            {!loading &&
+              concertData.map((item, index) => (
+                <ListUpcoming item={item} key={index} />
+              ))}
           </View>
+          </ScrollView>
         </View>
         <View style={styles.container2}>
           <Text style={styles.title}>Recently Opened</Text>
@@ -90,13 +141,6 @@ export default function Home() {
   );
 }
 
-const Upcoming = () => {
-  return (
-    <View>
-      <ListUpcoming data={UpcomingConcert} />
-    </View>
-  );
-};
 const Artist = () => {
   return (
     <View>
@@ -123,7 +167,6 @@ const styles = StyleSheet.create({
   container2: {
     paddingVertical: 5,
     gap: 5,
-    justifyContent: 'space-between',
   },
   artistCon: {
     gap: 8,

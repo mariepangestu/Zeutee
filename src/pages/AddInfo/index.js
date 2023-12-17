@@ -8,10 +8,13 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import {ArrowLeft} from 'iconsax-react-native';
+import {ArrowLeft, AddSquare,Add} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 import fontZ from '../../assets/font/fonts';
-import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 const AddInfo = () => {
   const [concertData, setConcertData] = useState({
@@ -31,23 +34,44 @@ const AddInfo = () => {
   const [image, setImage] = useState(null);
   const navigation = useNavigation();
   const handleUpload = async () => {
+    let filename = image.substring(image.lastIndexOf('/') + 1);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+    const reference = storage().ref(`concertimages/${filename}`);
+
     setLoading(true);
     try {
-      const response = await axios.post('https://657b0920394ca9e4af137213.mockapi.io/zeuteeapp/concert', {
-        image,
+      await reference.putFile(image);
+      const url = await reference.getDownloadURL();
+      await firestore().collection('concert').add({
+        image: url,
         artistName: concertData.artistName,
         event: concertData.event,
         description: concertData.description,
         date: concertData.date,
         info: concertData.info,
       });
-  
-      console.log(response);
       setLoading(false);
-      navigation.navigate('MyInfo');
-    } catch (e) {
-      console.log(e);
+      console.log('Info Concert added!');
+      navigation.navigate('Profile');
+    } catch (error) {
+      console.log(error);
     }
+  };
+  const handleImagePick = async () => {
+    ImagePicker.openPicker({
+      width: 1920,
+      height: 1080,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setImage(image.path);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
   return (
     <View style={styles.container}>
@@ -65,15 +89,58 @@ const AddInfo = () => {
           paddingVertical: 10,
           gap: 10,
         }}>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Image"
-            value={image}
-            onChangeText={text => setImage(text)}
-            placeholderTextColor="#888888"
-            style={textInput.input}
-          />
-        </View>
+        {image ? (
+          <View style={{position: 'relative'}}>
+            <FastImage
+              style={{width: '100%', height: 127, borderRadius: 5}}
+              source={{
+                uri: image,
+                headers: {Authorization: 'someAuthToken'},
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: '#000000',
+                borderRadius: 25,
+              }}
+              onPress={() => setImage(null)}>
+              <Add
+                size={20}
+                variant="Linear"
+                color="#ffffff"
+                style={{transform: [{rotate: '45deg'}]}}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleImagePick}>
+            <View
+              style={[
+                textInput.borderDashed,
+                {
+                  gap: 10,
+                  paddingVertical: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <AddSquare color="#ffffff" variant="Linear" size={42} />
+              <Text
+                style={{
+                  fontFamily: fontZ['Pjs-Regular'],
+                  fontSize: 12,
+                  color: '#ffffff',
+                }}>
+                Choose Picture
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
         <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Event"
@@ -130,6 +197,11 @@ const AddInfo = () => {
           <Text style={styles.buttonLabel}>Upload</Text>
         </TouchableOpacity>
       </View>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color='#ffffff' />
+        </View>
+      )}
     </View>
   );
 };

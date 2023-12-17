@@ -2,7 +2,6 @@ import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import fontZ from '../assets/font/fonts';
 import {CalendarAdd} from 'iconsax-react-native';
-import {useNavigation} from '@react-navigation/native';
 
 const truncateDescription = (text, maxLength) => {
   if (!text || typeof text !== 'string') {
@@ -16,9 +15,8 @@ const truncateDescription = (text, maxLength) => {
 };
 
 const ItemRemind = ({item, variant, onPress}) => {
-  const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.reminditem} onPress={() => navigation.navigate('ConcertDetail', {concertId: item.id})}>
+    <TouchableOpacity style={styles.reminditem}>
       <View style={styles.remindcard}>
         <Image
           style={styles.imageUpcoming}

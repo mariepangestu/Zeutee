@@ -1,13 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image, FlatList, TouchableOpacity} from 'react-native';
 import fontZ from '../assets/font/fonts';
-import {useNavigation} from '@react-navigation/native';
 
 const ItemArtist = ({item}) => {
-const navigation = useNavigation();
   return (
     <View style={styles.VerticalList}>
-      <TouchableOpacity style={styles.artistCon} onPress={() => navigation.navigate('ConcertDetail', {concertId: item.id})}>
+      <TouchableOpacity style={styles.artistCon} >
         <Image
           style={styles.imageRec}
           source={item.ArtistPic}
